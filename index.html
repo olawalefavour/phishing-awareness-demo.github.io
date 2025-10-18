@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Phishing Awareness Demo — Training Page</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--muted:#6b7280;--accent:#0b5fff}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:linear-gradient(180deg,var(--bg),#eef3ff);display:flex;min-height:100vh;align-items:center;justify-content:center;padding:32px}
+    .card{background:var(--card);width:100%;max-width:420px;border-radius:12px;box-shadow:0 8px 30px rgba(11,95,255,0.06);padding:28px}
+    h1{margin:0 0 6px;font-size:20px}
+    p.lead{margin:0 0 18px;color:var(--muted);font-size:13px}
+    .notice{background:#fff3cd;border:1px solid #ffe8a1;padding:10px;border-radius:8px;color:#6a4b00;margin-bottom:14px;font-size:13px}
+    label{display:block;font-size:13px;color:#111827;margin-bottom:6px}
+    input[type="text"],input[type="password"]{width:100%;padding:10px 12px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px;box-sizing:border-box}
+    button{width:100%;padding:10px 12px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:600;margin-top:12px;cursor:pointer}
+    .tips{margin-top:14px;font-size:13px;color:var(--muted)}
+    .result{margin-top:14px;padding:12px;border-radius:8px;background:#eef7ff;border:1px solid #d8ecff}
+    .footer{font-size:12px;color:var(--muted);text-align:center;margin-top:18px}
+    .brand{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(45deg,#0b5fff,#6ea8ff);display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700}
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <div class="brand">
+      <div class="logo">TR</div>
+      <div>
+        <h1>Training: Recognize Phishing</h1>
+        <p class="lead">This is a *simulated* login page used for awareness and teaching only.</p>
+      </div>
+    </div>
+
+    <div class="notice" role="status" aria-live="polite">
+      <strong>Simulation Notice:</strong> This page is intentionally mock — it will <em>not</em> send or store your password. Use this demo to practice spotting suspicious signs.
+    </div>
+
+    <form id="demoForm" onsubmit="return handleSubmit(event)" autocomplete="off" novalidate>
+      <label for="user">Username or email</label>
+      <input id="user" name="user" type="text" placeholder="e.g. your.name@example.com" required />
+
+      <label for="pass" style="margin-top:10px">Password</label>
+      <input id="pass" name="pass" type="password" placeholder="Enter password" required />
+
+      <button type="submit">Sign in</button>
+    </form>
+
+    <div id="outputArea" aria-live="polite"></div>
+
+    <div class="tips">
+      <strong>Quick tips to spot phishing:</strong>
+      <ul>
+        <li>Check sender address carefully — small typos are common.</li>
+        <li>Hover links to see where they actually point before clicking.</li>
+        <li>Unexpected urgent requests to confirm credentials are suspicious.</li>
+      </ul>
+    </div>
+
+    <div class="footer">For training use only — do not use this page to collect real passwords.</div>
+  </main>
+
+  <script>
+    function blurText(s) {
+      // Show a masked preview so we don't store anything.
+      if (!s) return '(empty)';
+      return s.slice(0,2) + '…' + s.slice(-1);
+    }
+
+    function handleSubmit(e){
+      e.preventDefault();
+      const u = document.getElementById('user').value.trim();
+      const p = document.getElementById('pass').value;
+      const out = document.getElementById('outputArea');
+
+      // Display safe, educational result — do not send anywhere.
+      out.innerHTML = `
+        <div class="result">
+          <strong>Simulation result</strong>
+          <p>This was a <em>training</em> page. No credentials were transmitted or stored.</p>
+          <p><strong>Entered (preview):</strong> ${escapeHtml(blurText(u))} / ${escapeHtml(blurText(p))}</p>
+          <p><strong>Next steps:</strong> Review the email or link that led you here. Ask: was the sender expected? does the URL look official?</p>
+        </div>
+      `;
+
+      // Clear the inputs to reinforce safe behavior
+      document.getElementById('demoForm').reset();
+
+      // Optional: focus first field for repeated demo
+      document.getElementById('user').focus();
+      return false;
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function (m) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+      });
+    }
+  </script>
+</body>
+</html>
