@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NINO — Sign in</title>
+  <meta name="description" content="NINO login — sign in to your account (demo page)." />
+  <style>
+    :root{
+      --bg:#f4f7fb; --card:#ffffff; --muted:#6b7280; --accent:#0b5fff;
+      --radius:12px; --shadow: 0 8px 30px rgba(11,95,255,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(180deg,var(--bg),#eef3ff);
+      padding:32px;
+      color:#0f172a;
+    }
+    .container{
+      width:100%;
+      max-width:420px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:28px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(15,23,42,0.03);
+    }
+
+    /* Header / logo */
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .logo{
+      width:48px;height:48px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,#0b5fff,#6ea8ff); color:white;font-weight:800;font-size:18px;
+      box-shadow:0 4px 18px rgba(11,95,255,0.12);
+    }
+    h1{margin:0;font-size:20px}
+    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    /* form */
+    label{display:block;font-size:13px;color:#0f172a;margin-bottom:6px}
+    input[type="text"], input[type="email"], input[type="password"]{
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #e6e9ef;
+      font-size:14px;
+      outline: none;
+    }
+    .row{display:flex;gap:12px}
+    .two {flex:1}
+
+    .actions{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+    .remember{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px}
+    .link{font-size:13px;color:var(--accent);text-decoration:none}
+    button{
+      width:100%;
+      padding:11px 14px;
+      margin-top:14px;
+      border-radius:10px;
+      border:0;
+      background:var(--accent);
+      color:white;font-weight:700;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .meta{margin-top:14px;font-size:13px;color:var(--muted);text-align:center}
+    .hint{margin-top:12px;padding:10px;border-radius:10px;background:#f8fafc;border:1px solid #eef2ff;color:var(--muted);font-size:13px}
+
+    .result{margin-top:14px;padding:12px;border-radius:10px;background:#eef7ff;border:1px solid #d8ecff;color:#08306b}
+
+    /* small screens */
+    @media (max-width:420px){
+      .container{padding:8px}
+      .card{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <section class="card" aria-labelledby="signin-title">
+      <header class="brand" >
+        <div class="logo" aria-hidden="true">NINO</div>
+        <div>
+          <h1 id="signin-title">Welcome back to NINO</h1>
+          <p class="lead">Sign in to access your dashboard</p>
+        </div>
+      </header>
+
+      <!-- IMPORTANT: form action is '#' (mock). Change to real endpoint only if you implement a secure backend. -->
+      <form id="loginForm" onsubmit="return handleSubmit(event)" autocomplete="on" novalidate>
+        <div>
+          <label for="email">Email or username</label>
+          <input id="email" name="email" type="email" inputmode="email" placeholder="you@example.com" required aria-required="true" />
+        </div>
+
+        <div style="margin-top:12px">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" placeholder="••••••••" required aria-required="true" />
+        </div>
+
+        <div class="actions" style="margin-top:8px">
+          <label class="remember"><input id="remember" name="remember" type="checkbox" /> Remember</label>
+          <a class="link" href="#" onclick="alert('Password reset flow not implemented in this demo.'); return false;">Forgot password?</a>
+        </div>
+
+        <button type="submit" aria-label="Sign in to NINO">Sign in</button>
+      </form>
+
+      <div id="output" aria-live="polite"></div>
+
+      <div class="meta">
+        <small>Not your device? <a href="#" class="link" onclick="alert('Sign out / clear session demo only.'); return false;">Sign out</a></small>
+      </div>
+
+      <div class="hint">
+        This is a local demo page. It does <strong>not</strong> transmit or store credentials anywhere. To connect to a real service, replace the form action with a secure endpoint (HTTPS) and implement proper server-side authentication.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Helper to show a short masked preview without storing real values
+    function maskPreview(s){
+      if(!s) return '(empty)';
+      return s.length > 4 ? s.slice(0,2) + '…' + s.slice(-1) : '•'.repeat(Math.max(1,s.length));
+    }
+
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});
+    }
+
+    function handleSubmit(e){
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value;
+      const out = document.getElementById('output');
+
+      // Show a safe result on-page only
+      out.innerHTML = `
+        <div class="result" role="status">
+          <strong>Signed in (demo)</strong>
+          <p>Preview: <code>${escapeHtml(maskPreview(email))}</code> / <code>${escapeHtml(maskPreview(pass))}</code></p>
+          <p>If this were a real site you'd now be redirected to your dashboard.</p>
+        </div>
+      `;
+
+      // Clear fields to avoid leaving credentials in the page
+      document.getElementById('loginForm').reset();
+
+      // Simulate redirect after short delay (demo only)
+      setTimeout(()=> {
+        out.innerHTML += '<p style="font-size:13px;color:var(--muted);margin-top:8px">Demo complete — you can customize the redirect in the script.</p>';
+      }, 700);
+
+      return false; // prevents default form submit
+    }
+  </script>
+</body>
+</html>
